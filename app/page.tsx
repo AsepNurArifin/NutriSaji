@@ -49,6 +49,7 @@ import {
   DialogFooter,
   DialogClose 
 } from "@/components/ui/dialog";
+import { useTrackingConsent } from "@/context/tracking-consent";
 
 // Define TypeScript interfaces for our states and plans
 interface Plan {
@@ -118,7 +119,8 @@ const deliveryZones = [
 ];
 
 export default function LandingPage() {
-  // Consent Vault states
+  // Consent Vault state & context hooks
+  const { trackingConsent, setTrackingConsent } = useTrackingConsent();
   const [cookieConsentOpen, setCookieConsentOpen] = React.useState(false);
   const [functionalCookies, setFunctionalCookies] = React.useState(false);
   const [analyticsCookies, setAnalyticsCookies] = React.useState(false);
@@ -136,8 +138,16 @@ export default function LandingPage() {
   // Ijab Qabul agreement
   const [ijabChecked, setIjabChecked] = React.useState(false);
   
-  // Transaction Modal State
+  // Transaction Modal & API State
   const [checkoutSuccessOpen, setCheckoutSuccessOpen] = React.useState(false);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [serverReceipt, setServerReceipt] = React.useState<{
+    subtotal: number;
+    shippingTotal: number;
+    taxTotal: number;
+    grandTotal: number;
+    contractType: string;
+  } | null>(null);
 
   // Trigger cookie consent 3 seconds after load
   React.useEffect(() => {
@@ -148,11 +158,11 @@ export default function LandingPage() {
       }, 3000);
       return () => clearTimeout(timer);
     } else {
-      // Load previous values
+      // Load previous values from localStorage & global context
       setFunctionalCookies(localStorage.getItem("nutrisaji_functional") === "true");
-      setAnalyticsCookies(localStorage.getItem("nutrisaji_analytics") === "true");
+      setAnalyticsCookies(trackingConsent === true);
     }
-  }, []);
+  }, [trackingConsent]);
 
   const handleCookieSave = (acceptAll = false) => {
     const functional = acceptAll ? true : functionalCookies;
@@ -160,10 +170,7 @@ export default function LandingPage() {
     
     setFunctionalCookies(functional);
     setAnalyticsCookies(analytics);
-    
-    localStorage.setItem("nutrisaji_consent_set", "true");
-    localStorage.setItem("nutrisaji_functional", functional.toString());
-    localStorage.setItem("nutrisaji_analytics", analytics.toString());
+    setTrackingConsent(analytics);
     
     setCookieConsentOpen(false);
   };
@@ -171,10 +178,7 @@ export default function LandingPage() {
   const handleCookieReject = () => {
     setFunctionalCookies(false);
     setAnalyticsCookies(false);
-    
-    localStorage.setItem("nutrisaji_consent_set", "true");
-    localStorage.setItem("nutrisaji_functional", "false");
-    localStorage.setItem("nutrisaji_analytics", "false");
+    setTrackingConsent(false);
     
     setCookieConsentOpen(false);
   };
@@ -183,15 +187,15 @@ export default function LandingPage() {
   const selectedPlan = mealPlans.find((p) => p.id === selectedPlanId) || mealPlans[0];
   const selectedZone = deliveryZones.find((z) => z.id === selectedZoneId) || deliveryZones[0];
 
-  // Pricing calculations
+  // Pricing calculations (for optimistic UI render)
   const subtotal = selectedPlan.pricePerDay * durationDays;
   const shippingTotal = selectedZone.surcharge * durationDays;
   const taxRate = 0.11; // 11% PPN (Pajak Pertambahan Nilai)
   const taxTotal = Math.round(subtotal * taxRate);
   const grandTotal = subtotal + shippingTotal + taxTotal;
 
-  // Checkout submission
-  const handleCheckoutSubmit = (e: React.FormEvent) => {
+  // Checkout submission to backend API
+  const handleCheckoutSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!customerName || !customerPhone || !customerAddress) {
       alert("Mohon lengkapi data diri Anda terlebih dahulu.");
@@ -202,8 +206,41 @@ export default function LandingPage() {
       return;
     }
     
-    // Simulate transaction processing
-    setCheckoutSuccessOpen(true);
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("/api/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          planId: selectedPlanId,
+          durationDays,
+          zoneId: selectedZoneId,
+          customerName,
+          customerPhone,
+          customerAddress,
+          ijabQabul: ijabChecked,
+        }),
+      });
+
+      const result = await response.json();
+      
+      if (!response.ok) {
+        const errMsg = result.errors 
+          ? result.errors.map((err: any) => err.message).join("\n") 
+          : result.message;
+        alert(`Gagal memproses pesanan:\n${errMsg}`);
+      } else {
+        setServerReceipt(result.data);
+        setCheckoutSuccessOpen(true);
+      }
+    } catch (error) {
+      console.error("Network error on checkout:", error);
+      alert("Terjadi kesalahan koneksi saat memproses pesanan. Silakan coba kembali.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const resetForm = () => {
@@ -212,6 +249,7 @@ export default function LandingPage() {
     setCustomerName("");
     setCustomerPhone("");
     setCustomerAddress("");
+    setServerReceipt(null);
   };
 
   return (
@@ -262,7 +300,7 @@ export default function LandingPage() {
             <div className="md:col-span-7 space-y-6">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 text-xs font-semibold dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-900/50">
                 <ShieldCheck className="h-3.5 w-3.5" />
-                <span>100% Akad Murabahah Transparan</span>
+                <span>100% Akad Salam / Istishna' (Pemesanan di Muka)</span>
               </div>
               
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-stone-900 dark:text-white leading-tight">
@@ -659,10 +697,10 @@ export default function LandingPage() {
                   
                   <div className="text-[10px] text-emerald-800/80 dark:text-emerald-400/80 pl-6 border-l border-emerald-200 dark:border-emerald-900">
                     <p className="font-semibold flex items-center gap-1 mb-0.5">
-                      <Lock className="h-3 w-3" /> Akad Syariah (Murabahah):
+                      <Lock className="h-3 w-3" /> Akad Salam / Istishna' (Pemesanan di Muka):
                     </p>
                     <p>
-                      Pembeli secara sadar dan sukarela menyetujui detail menu sehat, batasan daya tahan makanan, dan total rincian biaya yang dihitung di samping. Penjualan ini mengikat hak serta kewajiban kedua belah pihak secara halal dan jujur.
+                      Pembeli secara sadar menyetujui pemesanan dan pembayaran di muka untuk jasa pembuatan katering harian dengan spesifikasi nutrisi yang telah dijabarkan. Akad ini mengikat hak dan kewajiban kedua belah pihak secara transparan.
                     </p>
                   </div>
                 </div>
@@ -671,9 +709,9 @@ export default function LandingPage() {
                 <Button
                   type="submit"
                   className="w-full text-white font-bold h-11"
-                  disabled={!ijabChecked}
+                  disabled={!ijabChecked || isSubmitting}
                 >
-                  Bayar & Selesaikan Akad (Rp {grandTotal.toLocaleString("id-ID")})
+                  {isSubmitting ? "Memproses Akad..." : `Bayar & Selesaikan Akad (Rp ${grandTotal.toLocaleString("id-ID")})`}
                 </Button>
               </form>
             </div>
@@ -816,14 +854,14 @@ export default function LandingPage() {
               Ijab Qabul Diterima secara Sah!
             </DialogTitle>
             <DialogDescription className="text-center text-xs text-stone-500 dark:text-stone-400">
-              Transaksi akad Murabahah berhasil disepakati dan dicatat.
+              Transaksi akad Salam / Istishna' (Pemesanan di Muka) berhasil disepakati dan dicatat.
             </DialogDescription>
           </DialogHeader>
 
           <div className="bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl p-4 text-left text-xs space-y-2.5">
             <div className="flex justify-between font-bold pb-2 border-b border-stone-200 dark:border-stone-800 text-stone-800 dark:text-stone-250">
               <span>Rincian Pembelian:</span>
-              <span className="text-emerald-700 dark:text-emerald-400">Halal / Sah</span>
+              <span className="text-emerald-700 dark:text-emerald-400">Halal / Sah (Akad {serverReceipt?.contractType || "Salam / Istishna'"})</span>
             </div>
             
             <div className="grid grid-cols-2 gap-y-1.5 text-stone-600 dark:text-stone-300">
@@ -840,11 +878,13 @@ export default function LandingPage() {
               <span className="font-semibold text-right">{durationDays} Hari Kerja</span>
               
               <span className="text-stone-400">Total Transaksi:</span>
-              <span className="font-extrabold text-emerald-700 dark:text-emerald-400 text-right">Rp {grandTotal.toLocaleString("id-ID")}</span>
+              <span className="font-extrabold text-emerald-700 dark:text-emerald-400 text-right">
+                Rp {(serverReceipt?.grandTotal ?? grandTotal).toLocaleString("id-ID")}
+              </span>
             </div>
 
             <div className="p-2.5 bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-200/50 dark:border-emerald-900/30 rounded-lg text-[10px] text-emerald-800 dark:text-emerald-400 italic">
-              &ldquo;Saya terima pembelian makanan diet sehat {selectedPlan.name.split(" (")[0]} untuk {durationDays} hari pengantaran seharga Rp {grandTotal.toLocaleString("id-ID")} net dengan akad halal penuh.&rdquo;
+              &ldquo;Saya terima pesanan di muka makanan diet sehat {selectedPlan.name.split(" (")[0]} untuk {durationDays} hari pengantaran seharga Rp {(serverReceipt?.grandTotal ?? grandTotal).toLocaleString("id-ID")} net dengan akad Salam / Istishna' halal penuh.&rdquo;
             </div>
           </div>
 
