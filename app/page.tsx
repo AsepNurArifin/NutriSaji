@@ -16,8 +16,8 @@ import {
   X,
   Flame,
   Baby,
-  Soup,
   ImageOff,
+  ArrowRight,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -31,12 +31,6 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from "@/components/ui/accordion";
-import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -44,14 +38,6 @@ import {
   DialogDescription,
   DialogFooter,
 } from "@/components/ui/dialog";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 
 /* ─────────────────────────────────────────────────────────────────────────────
    DATA LAYER
@@ -75,7 +61,7 @@ const menuItems: MenuItem[] = [
     price: 35000,
     badge: "Best Seller",
     badgeIcon: <Star className="h-3 w-3" />,
-    badgeClass: "bg-red-600 text-white border-red-600",
+    badgeClass: "bg-primary/10 text-primary border-primary/20",
     ingredients:
       "Mie lurus kecil, kuah kaldu ayam pekat 8 jam, ayam chashu halal, jamur kikurage, daun bawang, nori.",
     description:
@@ -87,7 +73,7 @@ const menuItems: MenuItem[] = [
     price: 38000,
     badge: "Pedas Nendang",
     badgeIcon: <Flame className="h-3 w-3" />,
-    badgeClass: "bg-orange-600 text-white border-orange-600",
+    badgeClass: "bg-primary/10 text-primary border-primary/20",
     ingredients:
       "Mie keriting tebal, kuah kaldu ayam pedas, daging ayam cincang berbumbu, pak choy, wijen sangrai, cabai kering.",
     description:
@@ -99,7 +85,7 @@ const menuItems: MenuItem[] = [
     price: 32000,
     badge: "Aman untuk Anak",
     badgeIcon: <Baby className="h-3 w-3" />,
-    badgeClass: "bg-emerald-600 text-white border-emerald-600",
+    badgeClass: "bg-success-trust/10 text-success-trust border-success-trust/20",
     ingredients:
       "Mie lurus kecil, kuah kaldu ayam shoyu halal, telur ajitama setengah matang, nori, jagung manis, daun bawang.",
     description:
@@ -111,32 +97,75 @@ const menuItems: MenuItem[] = [
    ANATOMI HALAL COMPARISON DATA
 ───────────────────────────────────────────────────────────────────────────── */
 
-interface ComparisonRow {
-  component: string;
-  haramSpec: string;
-  halalSpec: string;
+interface ComparisonCardData {
+  title: string;
+  traditionalName: string;
+  traditionalDesc: string;
+  halalName: string;
+  halalDesc: string;
 }
 
-const comparisonData: ComparisonRow[] = [
+const comparisonCards: ComparisonCardData[] = [
   {
-    component: "Kaldu (Broth)",
-    haramSpec: "Tonkotsu (Tulang Babi) / Pengental sintetis & MSG berlebih.",
-    halalSpec: "Tori Paitan. Tulang ayam segar bersertifikat potong syar'i direbus selama 8 jam hingga kolagen alami mengental.",
+    title: "Broth (Kaldu)",
+    traditionalName: "Tonkotsu (Pork Bone) & MSG",
+    traditionalDesc: "Pork bone broth or synthetic thickeners & excessive MSG.",
+    halalName: "Tori Paitan",
+    halalDesc: "Fresh syar'i certified chicken bones simmered for 8 hours until natural collagen thickens.",
   },
   {
-    component: "Umami & Manis",
-    haramSpec: "Mirin & Sake (Alkohol) untuk aroma manis-gurih khas Jepang.",
-    halalSpec: "Reduksi sari apel fuji matang, kaldu jamur shiitake kering, dan madu hutan murni.",
+    title: "Umami & Sweetness",
+    traditionalName: "Mirin & Sake (Alcohol)",
+    traditionalDesc: "Fermented alcohol used for sweet-gurih aroma in Japanese cooking.",
+    halalName: "Apple & Shiitake Reduction",
+    halalDesc: "Reduction of ripe Fuji apple extract, dried shiitake mushroom broth, and pure forest honey.",
   },
   {
-    component: "Minyak Gurih (Oil)",
-    haramSpec: "Lard (Minyak Babi) untuk menghasilkan rasa berminyak yang gurih di bibir.",
-    halalSpec: "Chicken Schmaltz (Minyak lemak kulit ayam yang dicairkan perlahan dengan suhu rendah).",
+    title: "Rich Oil (Minyak Gurih)",
+    traditionalName: "Lard (Pork Fat)",
+    traditionalDesc: "Pork fat used to create standard greasy rich ramen mouthfeel.",
+    halalName: "Chicken Schmaltz",
+    halalDesc: "Slowly rendered chicken skin fat at low temperature for clean richness.",
   },
   {
-    component: "Shoyu (Kecap Asin)",
-    haramSpec: "Kecap asin fermentasi konvensional dengan residu alkohol/etanol.",
-    halalSpec: "Shoyu 100% tersertifikasi Halal MUI dengan kadar alkohol 0.0% sejak awal proses.",
+    title: "Shoyu (Kecap Asin)",
+    traditionalName: "Conventional Shoyu",
+    traditionalDesc: "Fermented soy sauce containing active alcohol/ethanol residues.",
+    halalName: "MUI Halal Shoyu",
+    halalDesc: "Shoyu 100% Halal MUI certified with 0.0% alcohol from the start.",
+  },
+];
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   INGREDIENTS GRID DATA
+───────────────────────────────────────────────────────────────────────────── */
+
+interface IngredientItem {
+  icon: string;
+  title: string;
+  description: string;
+}
+
+const ingredientItems: IngredientItem[] = [
+  {
+    icon: "🍗",
+    title: "Syar'i Chicken",
+    description: "Fresh certified chicken bones, 8-hour simmer.",
+  },
+  {
+    icon: "🍎",
+    title: "Fuji Apple Extract",
+    description: "Natural sweetness, zero alcohol.",
+  },
+  {
+    icon: "🍄",
+    title: "Shiitake Broth",
+    description: "Dried premium mushrooms for deep umami.",
+  },
+  {
+    icon: "🍯",
+    title: "Forest Honey",
+    description: "Pure, unprocessed natural sweetener.",
   },
 ];
 
@@ -158,7 +187,42 @@ export default function LandingPage() {
     text: "Memuat Status...",
   });
 
-  // Load consent settings after 3 seconds
+  // Scroll reveal setup
+  React.useEffect(() => {
+    // Respect prefers-reduced-motion
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (mediaQuery.matches) {
+      const allElements = document.querySelectorAll(".reveal-on-scroll, .reveal-stagger");
+      allElements.forEach((el) => el.classList.add("reveal-active"));
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("reveal-active");
+            const children = entry.target.querySelectorAll(".reveal-stagger");
+            children.forEach((child, index) => {
+              (child as HTMLElement).style.transitionDelay = `${index * 0.1}s`;
+              child.classList.add("reveal-active");
+            });
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.15 }
+    );
+
+    const revealTargets = document.querySelectorAll(".reveal-on-scroll");
+    revealTargets.forEach((target) => observer.observe(target));
+
+    return () => {
+      revealTargets.forEach((target) => observer.unobserve(target));
+    };
+  }, []);
+
+  // Time calculations and storage consent
   React.useEffect(() => {
     const getStatus = () => {
       const now = new Date();
@@ -188,314 +252,516 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="flex-1 flex flex-col bg-stone-50 text-slate-900 font-sans">
+    <div className="flex-1 flex flex-col bg-bg-warm text-text-primary font-sans relative">
       {/* HEADER NAV */}
-      <header className="sticky top-0 z-40 w-full bg-white/90 backdrop-blur-md border-b border-slate-200 shadow-xs">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
-          <a href="#" className="font-extrabold text-base tracking-tight flex items-center gap-2">
-            <span className="text-red-600">🍜</span> RamenPaitan.Plg
+      <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-stone-200/80 shadow-xs">
+        <div className="max-w-[1200px] mx-auto px-6 md:px-10 lg:px-20 h-16 flex items-center justify-between">
+          <a
+            href="#"
+            className="font-serif font-bold text-2xl tracking-tight text-secondary focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-accent focus-visible:ring-offset-2 rounded-md"
+          >
+            Nutri Saji
           </a>
-          
-          <nav className="hidden md:flex items-center gap-6 text-sm font-semibold text-slate-600">
-            <a href="#anatomi" className="hover:text-red-600 transition-colors">Bukti Halal</a>
-            <a href="#menu" className="hover:text-red-600 transition-colors">Menu &amp; Harga</a>
-            <a href="#lokasi" className="hover:text-red-600 transition-colors">Lokasi Stand</a>
-            <a href={WA_URL} target="_blank" rel="noopener noreferrer" className="hover:text-red-600 text-red-600 flex items-center gap-1">
-              <Phone className="h-3.5 w-3.5" /> Pesan WA
+
+          <nav className="hidden md:flex items-center gap-8 text-sm font-semibold text-text-muted">
+            <a
+              href="#anatomi"
+              className="relative py-1 hover:text-accent transition-colors after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:origin-center after:scale-x-0 after:bg-accent after:transition-transform after:duration-200 hover:after:scale-x-100"
+            >
+              Bukti Halal
+            </a>
+            <a
+              href="#menu"
+              className="relative py-1 hover:text-accent transition-colors after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:origin-center after:scale-x-0 after:bg-accent after:transition-transform after:duration-200 hover:after:scale-x-100"
+            >
+              Menu &amp; Harga
+            </a>
+            <a
+              href="#lokasi"
+              className="relative py-1 hover:text-accent transition-colors after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full after:origin-center after:scale-x-0 after:bg-accent after:transition-transform after:duration-200 hover:after:scale-x-100"
+            >
+              Lokasi Stand
+            </a>
+            <a
+              href={WA_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-primary hover:text-[#A84A2D] transition-colors font-bold"
+            >
+              <Phone className="h-4 w-4" /> Pesan WA
             </a>
           </nav>
 
-          <button 
-            className="md:hidden p-2 -mr-2 text-slate-700"
+          <button
+            className="md:hidden p-2 -mr-2 text-secondary hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-accent rounded-lg"
             onClick={() => setMobileNavOpen(!mobileNavOpen)}
+            aria-label="Toggle menu"
           >
-            {mobileNavOpen ? <X className="h-5 w-5" /> : <MenuIcon className="h-5 w-5" />}
+            {mobileNavOpen ? <X className="h-6 w-6" /> : <MenuIcon className="h-6 w-6" />}
           </button>
         </div>
 
         {/* Mobile menu dropdown */}
         {mobileNavOpen && (
-          <div className="md:hidden bg-white border-t border-slate-200 px-4 py-3 space-y-2 font-semibold">
-            <a href="#anatomi" className="block py-1.5 text-slate-700" onClick={() => setMobileNavOpen(false)}>Bukti Halal</a>
-            <a href="#menu" className="block py-1.5 text-slate-700" onClick={() => setMobileNavOpen(false)}>Menu &amp; Harga</a>
-            <a href="#lokasi" className="block py-1.5 text-slate-700" onClick={() => setMobileNavOpen(false)}>Lokasi Stand</a>
-            <a href={WA_URL} target="_blank" rel="noopener noreferrer" className="block py-1.5 text-red-600" onClick={() => setMobileNavOpen(false)}>Pesan WA</a>
+          <div className="md:hidden bg-white border-t border-stone-200 px-6 py-4 space-y-3 font-semibold shadow-md">
+            <a
+              href="#anatomi"
+              className="block py-2 text-secondary hover:text-primary transition-colors"
+              onClick={() => setMobileNavOpen(false)}
+            >
+              Bukti Halal
+            </a>
+            <a
+              href="#menu"
+              className="block py-2 text-secondary hover:text-primary transition-colors"
+              onClick={() => setMobileNavOpen(false)}
+            >
+              Menu &amp; Harga
+            </a>
+            <a
+              href="#lokasi"
+              className="block py-2 text-secondary hover:text-primary transition-colors"
+              onClick={() => setMobileNavOpen(false)}
+            >
+              Lokasi Stand
+            </a>
+            <a
+              href={WA_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block py-2 text-primary font-bold hover:text-[#A84A2D] transition-colors"
+              onClick={() => setMobileNavOpen(false)}
+            >
+              Pesan via WA
+            </a>
           </div>
         )}
       </header>
 
-      {/* HERO SECTION */}
-      <section className="relative py-16 sm:py-24 bg-gradient-to-b from-orange-50/50 to-stone-50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            
-            {/* Left Column (Aggressive Honesty) */}
-            <div className="space-y-6">
-              <div className="inline-flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full text-xs font-bold text-emerald-700">
-                <ShieldCheck className="h-4 w-4" /> 100% Halal Tanpa Keraguan (Syubhat)
-              </div>
-              
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 tracking-tight leading-tight">
-                Ramen Autentik Jepang.<br />
-                <span className="text-red-600">100% Halal Tanpa Syubhat.</span>
-              </h1>
-              
-              <p className="text-base sm:text-lg text-slate-600 leading-relaxed">
-                Kami membongkar anatomi ramen. Tanpa Babi, Tanpa Lard, Tanpa Mirin, Tanpa Sake. Rasa umami maksimal berasal dari bahan-bahan yang 100% thayyib.
-              </p>
-              
-              <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                <a
-                  href="#anatomi"
-                  className="inline-flex items-center justify-center rounded-lg font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 h-11 px-8 text-base bg-red-600 hover:bg-red-700 text-white shadow-md shadow-red-600/10"
-                >
-                  Lihat Bukti Halal Kami
-                </a>
-                <a
-                  href={WA_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center rounded-lg font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 h-11 px-8 text-base border border-slate-300 text-slate-700 bg-white hover:bg-slate-100 shadow-xs"
-                >
-                  Pesan via WhatsApp
-                </a>
-              </div>
+      {/* HERO SECTION — FULL REDESIGN */}
+      <section className="relative w-full h-[100vh] min-h-[600px] overflow-hidden flex items-end">
+        {/* Background Visual (Image Placeholder with requested styles) */}
+        <div className="absolute inset-0 z-0 overflow-hidden bg-[#2C3E50]">
+          <div
+            className="absolute inset-0 bg-cover bg-center animate-hero-bg opacity-35"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle at 60% 50%, #C75B39 0%, #2C3E50 80%)",
+            }}
+          />
+          {/* Subtle Vignette at corners */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_40%,rgba(0,0,0,0.6)_100%)] pointer-events-none" />
+
+          {/* Actual Photo Placeholder Badge */}
+          <div className="absolute top-8 right-8 z-10 bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-semibold px-4 py-2 rounded-lg">
+            📸 Foto Asli Hidangan Segera Hadir
+          </div>
+        </div>
+
+        {/* Full-bleed Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-tr from-secondary/90 via-secondary/65 to-secondary/25 z-10" />
+
+        {/* Content Positioning (Left-aligned, bottom-left text block) */}
+        <div className="relative z-20 w-full max-w-[1200px] mx-auto px-6 md:px-10 lg:px-20 pb-20 md:pb-24">
+          <div className="max-w-[600px] space-y-6 text-left animate-hero-text">
+            {/* Trust Pill Badge */}
+            <div className="inline-flex items-center gap-2 bg-white/15 border border-white/30 backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-bold text-white uppercase tracking-wider">
+              <ShieldCheck className="h-4 w-4 text-accent" /> 100% Halal Certified
             </div>
 
-            {/* Right Column (Image Placeholder) */}
-            <div className="relative aspect-[4/3] bg-amber-50 border-2 border-dashed border-amber-300 rounded-2xl flex flex-col items-center justify-center text-center p-6 shadow-inner">
-              <ImageOff className="h-10 w-10 text-amber-400 mb-3" />
-              <p className="text-sm font-bold text-amber-800">Actual Photo of Tori Paitan Ramen</p>
-              <p className="text-xs text-amber-600/80 mt-1 max-w-xs leading-normal">
-                (No Stock Images — Foto asli hidangan ramen langsung dari kedai kami di Palembang)
-              </p>
-            </div>
+            {/* H1 Headline */}
+            <h1 className="text-[36px] sm:text-[48px] md:text-[56px] font-bold leading-[1.15] tracking-[-0.02em] text-white">
+              Ramen <br />
+              Tori Paitan 100% Halal Palembang
+            </h1>
 
+            {/* Subheadline */}
+            <p className="text-base md:text-lg font-normal leading-[1.7] text-white/90">
+              We deconstruct ramen anatomy. No pork, no lard, no mirin, no sake. Maximum umami from 100% thayyib ingredients.
+            </p>
+
+            {/* Actions & Micro-text */}
+            <div className="space-y-4 pt-2">
+              <a
+                href={WA_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-2 bg-primary hover:bg-[#A84A2D] active:scale-95 text-white font-bold text-base px-9 py-4 rounded-xl shadow-primary-btn hover:shadow-primary-btn-hover hover:scale-[1.03] transition-all duration-250 ease-[cubic-bezier(0.4,0,0.2,1)] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-accent focus-visible:ring-offset-2"
+              >
+                {/* WhatsApp Logo green color background inline path */}
+                <svg
+                  className="h-5 w-5 fill-current text-[#25D366]"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M17.472 14.382c-.022-.08-.085-.184-.245-.26-.159-.077-.945-.467-1.092-.518-.147-.052-.254-.078-.36.078-.106.156-.41.518-.5.618-.09.1-.18.112-.34.034a3.785 3.785 0 0 1-1.258-.777 4.148 4.148 0 0 1-.87-1.084c-.1-.173-.01-.266.075-.35.077-.076.16-.184.24-.277.078-.09.105-.15.158-.25.05-.1.025-.19-.012-.267-.038-.077-.36-.865-.492-1.183-.128-.31-.26-.268-.36-.273-.098-.005-.212-.005-.326-.005a.63.63 0 0 0-.457.213c-.156.17-.597.583-.597 1.42 0 .838.61 1.65.696 1.77.086.12 1.2 1.83 2.9 2.562.404.175.72.28 1.0.37.406.128.775.11 1.066.067.324-.047 1.002-.41 1.144-.807.142-.397.142-.736.1-.807zM12 2C6.477 2 2 6.477 2 12a9.96 9.96 0 0 0 1.956 5.922L2 22l4.238-1.895A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2z" />
+                </svg>
+                Order via WhatsApp
+              </a>
+              <span className="text-xs sm:text-sm text-white/70 block pl-1">
+                Pickup only — Guaranteed hot &amp; fresh from our open kitchen.
+              </span>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* CORE FEATURE: ANATOMI HALAL TRANSPARENCY MATRIX */}
-      <section id="anatomi" className="py-16 sm:py-20 bg-white border-y border-slate-200">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          
-          <div className="text-center space-y-2 mb-12">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-              Dekonstruksi Kaldu: Kenapa Kami Berbeda?
+      {/* HALAL COMPARISON SECTION — TABLE REDESIGN */}
+      <section
+        id="anatomi"
+        className="py-[50px] md:py-[70px] lg:py-[100px] bg-bg-warm border-y border-stone-200/80 reveal-on-scroll"
+      >
+        <div className="max-w-[1200px] mx-auto px-6 md:px-10 lg:px-20">
+          <div className="text-center space-y-4 mb-12">
+            <h2 className="text-[28px] md:text-[36px] font-semibold tracking-[-0.01em] text-secondary">
+              Radical Separation of Halal &amp; Syubhat
             </h2>
-            <p className="text-sm text-slate-500 max-w-xl mx-auto leading-normal">
-              Kami memisahkan syubhat dan haram secara radikal, menggantinya dengan bahan alami bersertifikasi halal demi ketenangan bersantap Anda.
+            <p className="text-base md:text-lg text-text-muted max-w-[700px] mx-auto leading-relaxed">
+              We replace haram and syubhat ingredients with natural, certified halal alternatives for your peace of mind.
             </p>
           </div>
 
-          <div className="max-w-4xl mx-auto overflow-hidden border border-slate-200 rounded-xl bg-stone-50/50">
-            <Table>
-              <TableHeader className="bg-slate-100/80">
-                <TableRow>
-                  <TableHead className="w-1/4">Bagian Menu</TableHead>
-                  <TableHead className="w-3/8 text-red-700 bg-red-50/40">Haram / Syubhat Tradisional</TableHead>
-                  <TableHead className="w-3/8 text-emerald-800 bg-emerald-50/30">Solusi Halal RamenPaitan</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {comparisonData.map((row, idx) => (
-                  <TableRow key={idx}>
-                    <TableCell className="font-bold text-slate-950 text-xs sm:text-sm">{row.component}</TableCell>
-                    <TableCell className="bg-red-50/10">
-                      <div className="flex gap-2 items-start text-xs sm:text-sm text-slate-700">
-                        <XCircle className="h-4.5 w-4.5 text-red-500 shrink-0 mt-0.5" />
-                        <span>{row.haramSpec}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell className="bg-emerald-50/10">
-                      <div className="flex gap-2 items-start text-xs sm:text-sm text-slate-950 font-medium">
-                        <CheckCircle className="h-4.5 w-4.5 text-emerald-600 shrink-0 mt-0.5" />
-                        <span>{row.halalSpec}</span>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {comparisonCards.map((card, idx) => (
+              <div
+                key={idx}
+                className="relative bg-white rounded-2xl p-8 shadow-secondary-card hover:shadow-secondary-card-hover hover:-translate-y-1 transition-all duration-300 overflow-hidden border border-stone-200/50 reveal-stagger"
+              >
+                {/* 4px top border - Left (Haram) uses red, Right (Halal) uses primary */}
+                <div className="absolute top-0 inset-x-0 h-1 flex">
+                  <div className="w-1/2 bg-error-warning-muted" />
+                  <div className="w-1/2 bg-primary" />
+                </div>
+
+                <h3 className="text-xl font-bold text-secondary mb-6 border-b border-stone-100 pb-3">
+                  {card.title}
+                </h3>
+
+                <div className="grid grid-cols-2 gap-6 divide-x divide-stone-100">
+                  {/* Left Column (Traditional) */}
+                  <div className="space-y-3.5 pr-2">
+                    <div className="text-[11px] font-bold uppercase tracking-wider text-error-warning-muted">
+                      Traditional
+                    </div>
+                    <div className="flex items-center justify-center h-8 w-8 rounded-full bg-red-50 text-error-warning-muted">
+                      <XCircle className="h-4.5 w-4.5" />
+                    </div>
+                    <p className="text-[13px] font-semibold line-through text-text-muted leading-relaxed">
+                      {card.traditionalName}
+                    </p>
+                    <p className="text-[12px] text-text-muted/80 leading-relaxed">
+                      {card.traditionalDesc}
+                    </p>
+                  </div>
+
+                  {/* Right Column (Nutri Saji) */}
+                  <div className="space-y-3.5 pl-6">
+                    <div className="text-[11px] font-bold uppercase tracking-wider text-primary">
+                      Nutri Saji
+                    </div>
+                    <div className="flex items-center justify-center h-8 w-8 rounded-full bg-orange-50 text-primary">
+                      <CheckCircle className="h-4.5 w-4.5" />
+                    </div>
+                    <p className="text-[13px] font-bold text-text-primary leading-relaxed">
+                      {card.halalName}
+                    </p>
+                    <p className="text-[12px] text-text-primary leading-relaxed">
+                      {card.halalDesc}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* INGREDIENT TRANSPARENCY — ICON GRID */}
+      <section className="py-[50px] md:py-[70px] lg:py-[100px] bg-white reveal-on-scroll">
+        <div className="max-w-[1200px] mx-auto px-6 md:px-10 lg:px-20">
+          <div className="text-center space-y-4 mb-12">
+            <h2 className="text-[28px] md:text-[36px] font-semibold tracking-[-0.01em] text-secondary">
+              What Goes Into Your Bowl
+            </h2>
+            <p className="text-base md:text-lg text-text-muted max-w-[600px] mx-auto leading-relaxed">
+              Every ingredient is natural, traceable, and certified.
+            </p>
           </div>
 
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {ingredientItems.map((item, idx) => (
+              <div
+                key={idx}
+                className="text-center space-y-4 p-6 rounded-2xl hover:bg-stone-50/50 transition-colors duration-300 reveal-stagger"
+              >
+                <div className="h-16 w-16 rounded-full bg-bg-warm flex items-center justify-center text-3xl mx-auto shadow-inner">
+                  {item.icon}
+                </div>
+                <h3 className="text-lg font-bold text-secondary">{item.title}</h3>
+                <p className="text-sm text-text-muted max-w-[200px] mx-auto leading-relaxed">
+                  {item.description}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* TRANSPARENCY CATALOG (MENU) */}
-      <section id="menu" className="py-16 sm:py-20 bg-stone-50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          
-          <div className="text-center space-y-2 mb-12">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+      <section
+        id="menu"
+        className="py-[50px] md:py-[70px] lg:py-[100px] bg-bg-warm border-t border-stone-200/80 reveal-on-scroll"
+      >
+        <div className="max-w-[1200px] mx-auto px-6 md:px-10 lg:px-20">
+          <div className="text-center space-y-4 mb-12">
+            <h2 className="text-[28px] md:text-[36px] font-semibold tracking-[-0.01em] text-secondary">
               Menu &amp; Simetri Informasi
             </h2>
-            <p className="text-sm text-slate-500 max-w-xl mx-auto leading-normal">
+            <p className="text-base md:text-lg text-text-muted max-w-[600px] mx-auto leading-relaxed">
               Harga nett transparan tanpa biaya siluman. Rincian bahan tertulis lengkap.
             </p>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {menuItems.map((item) => (
-              <Card key={item.id} className="flex flex-col border-slate-200 bg-white">
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between gap-2">
-                    <CardTitle className="text-base font-bold text-slate-950">{item.name}</CardTitle>
-                    <Badge className={`${item.badgeClass} text-[10px] px-2 py-0.5 whitespace-nowrap flex items-center gap-1 shrink-0`}>
+              <Card
+                key={item.id}
+                className="flex flex-col border-stone-200 bg-white rounded-2xl shadow-secondary-card hover:shadow-secondary-card-hover hover:-translate-y-1 transition-all duration-300 reveal-stagger"
+              >
+                <CardHeader className="pb-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <CardTitle className="text-xl font-bold text-secondary leading-tight">
+                      {item.name}
+                    </CardTitle>
+                    <Badge
+                      className={`${item.badgeClass} rounded-lg text-[10px] px-2.5 py-1 whitespace-nowrap flex items-center gap-1.5 shrink-0`}
+                    >
                       {item.badgeIcon} {item.badge}
                     </Badge>
                   </div>
-                  <CardDescription className="text-xs text-slate-500 mt-1 leading-relaxed">
+                  <CardDescription className="text-sm text-text-muted mt-2 leading-relaxed">
                     {item.description}
                   </CardDescription>
                 </CardHeader>
 
-                <CardContent className="flex-1 space-y-3">
-                  <div className="bg-stone-50 border border-stone-200 rounded-lg p-3">
-                    <p className="text-2xl font-extrabold text-red-600 tracking-tight">
+                <CardContent className="flex-1 space-y-4">
+                  <div className="bg-bg-warm border border-stone-200/60 rounded-xl p-4">
+                    <p className="text-2xl font-extrabold text-primary tracking-tight">
                       Rp {item.price.toLocaleString("id-ID")}
                     </p>
-                    <p className="text-[10px] text-slate-400 mt-0.5">
+                    <p className="text-[10px] text-text-muted mt-1 leading-normal font-medium">
                       Harga sudah termasuk Pajak Restoran (PB1). Tidak ada biaya siluman.
                     </p>
                   </div>
 
-                  <div className="space-y-1">
-                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Komposisi:</p>
-                    <p className="text-xs text-slate-700 leading-relaxed">{item.ingredients}</p>
+                  <div className="space-y-1.5">
+                    <p className="text-[11px] font-bold text-text-muted uppercase tracking-wider">
+                      Komposisi:
+                    </p>
+                    <p className="text-sm text-text-primary leading-relaxed">
+                      {item.ingredients}
+                    </p>
                   </div>
                 </CardContent>
 
-                <CardFooter className="pt-3 border-t border-stone-100">
+                <CardFooter className="pt-4 border-t border-stone-100">
                   <a
                     href="#pesan"
-                    className="inline-flex items-center justify-center whitespace-nowrap rounded-md font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 h-8 px-3 text-xs w-full text-red-600 border border-red-200 hover:bg-red-50 hover:border-red-300 bg-white shadow-xs"
+                    className="inline-flex items-center justify-center whitespace-nowrap rounded-xl font-bold transition-colors focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-accent h-10 px-4 text-sm w-full text-primary border border-primary/20 hover:bg-orange-50/50 hover:border-primary/40 bg-white shadow-xs"
                   >
-                    <MessageCircle className="h-3.5 w-3.5 mr-1.5" /> Pesan via WhatsApp
+                    <MessageCircle className="h-4 w-4 mr-2" /> Pesan via WhatsApp
                   </a>
                 </CardFooter>
               </Card>
             ))}
           </div>
 
+          <p className="text-center text-sm font-semibold text-text-muted mt-8">
+            Harga sudah termasuk Pajak Restoran (PB1). Tidak ada biaya siluman.
+          </p>
+
           {/* DELIVER ALERT (GHARAR PREVENTION) */}
-          <div className="mt-10 max-w-3xl mx-auto bg-amber-50 border border-amber-200 rounded-xl p-5 flex gap-3.5 items-start">
-            <AlertTriangle className="h-5.5 w-5.5 text-amber-600 shrink-0 mt-0.5" />
-            <div className="space-y-1">
-              <h3 className="text-sm font-extrabold text-amber-800">Batas Layanan Kami</h3>
-              <p className="text-xs text-amber-700 leading-relaxed">
+          <div className="mt-12 max-w-[800px] mx-auto bg-amber-50 border border-amber-200/80 rounded-2xl p-6 flex gap-4 items-start reveal-stagger">
+            <AlertTriangle className="h-6 w-6 text-primary shrink-0 mt-0.5" />
+            <div className="space-y-1.5">
+              <h3 className="text-base font-bold text-secondary">Batas Layanan Kami</h3>
+              <p className="text-sm text-text-primary leading-relaxed">
                 Mie ramen segar cepat mengembang jika didiamkan lama, dan kuah harus dinikmati panas. Kami <strong>TIDAK bekerja sama dengan Ojek Online pihak ketiga</strong> untuk menjaga mutu rasa. Kami hanya melayani <strong>Makan di Tempat (Dine-in)</strong> dan <strong>Ambil Sendiri (Self-Pickup)</strong> dengan pemesanan di muka via WhatsApp.
               </p>
             </div>
           </div>
-
         </div>
       </section>
 
-      {/* OPERATIONAL INFO */}
-      <section id="lokasi" className="py-16 sm:py-20 bg-white border-t border-slate-200">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-2 gap-10 max-w-4xl mx-auto items-center">
-            
-            <div className="space-y-6">
-              <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">Kunjungi Kedai Kami</h2>
-              <p className="text-slate-600 text-sm leading-relaxed">
-                Kami menyajikan semangkuk ramen panas dari dapur terbuka kami. Proses pembuatan bersih, transparan, dan dapat disaksikan langsung di tempat.
-              </p>
-
-              <div className="space-y-4">
-                <div className="flex gap-3 items-start">
-                  <div className="h-9 w-9 bg-red-50 rounded-lg flex items-center justify-center text-red-600 shrink-0">
-                    <MapPin className="h-4.5 w-4.5" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Alamat Kedai</p>
-                    <p className="text-sm font-bold text-slate-900">Jl. Sudirman (Samping X), Palembang.</p>
-                  </div>
+      {/* OPEN KITCHEN / TRANSPARENCY SECTION */}
+      <section className="py-[50px] md:py-[70px] lg:py-[100px] bg-secondary text-white reveal-on-scroll">
+        <div className="max-w-[1200px] mx-auto px-6 md:px-10 lg:px-20">
+          <div className="grid md:grid-cols-12 gap-10 items-center">
+            {/* Left Side (55% width on desktop) */}
+            <div className="md:col-span-7 reveal-stagger">
+              <div className="relative aspect-[4/3] bg-stone-850 rounded-2xl overflow-hidden border border-stone-700/80 shadow-inner group">
+                <div className="absolute inset-0 bg-gradient-to-br from-stone-700 to-slate-900 opacity-90 transition-transform duration-500 group-hover:scale-105" />
+                <div className="relative z-10 h-full w-full flex flex-col items-center justify-center text-center p-8">
+                  <Utensils className="h-12 w-12 text-accent mb-3 opacity-80" />
+                  <p className="text-sm font-bold text-white uppercase tracking-wider">
+                    Foto Kedai &amp; Dapur Terbuka
+                  </p>
+                  <p className="text-xs text-stone-300 mt-1">📸 Foto Asli Segera Hadir</p>
                 </div>
 
-                <div className="flex gap-3 items-start">
-                  <div className="h-9 w-9 bg-slate-100 rounded-lg flex items-center justify-center text-slate-600 shrink-0">
-                    <Clock className="h-4.5 w-4.5" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Waktu Buka</p>
-                    <p className="text-sm font-bold text-slate-900">Selasa - Minggu: 16:00 - 22:00 WIB</p>
-                    <p className="text-xs text-slate-500">Tutup setiap hari Senin.</p>
-                  </div>
+                {/* Floating Badge */}
+                <div className="absolute bottom-4 right-4 z-10 bg-white text-secondary font-bold text-xs px-4 py-2.5 rounded-lg shadow-kitchen-badge">
+                  🔥 Open Kitchen — Watch Us Cook
                 </div>
               </div>
             </div>
 
-            {/* Status Card */}
-            <div className="bg-stone-50 border border-slate-200 p-8 rounded-2xl flex flex-col items-center justify-center text-center space-y-4">
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Status Kedai Hari Ini</p>
-              
-              <div className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-extrabold border ${
-                currentStatus.open 
-                  ? "bg-emerald-50 text-emerald-700 border-emerald-200" 
-                  : "bg-red-50 text-red-700 border-red-200"
-              }`}>
-                <span className={`h-2.5 w-2.5 rounded-full ${currentStatus.open ? "bg-emerald-500 animate-pulse-dot" : "bg-red-500"}`} />
-                {currentStatus.text}
+            {/* Right Side (45% width on desktop) */}
+            <div className="md:col-span-5 space-y-6 text-left reveal-stagger">
+              <div className="text-xs font-bold uppercase tracking-widest text-accent">
+                Transparency
               </div>
-              <p className="text-[10px] text-slate-400">
-                Pemesanan WhatsApp hanya dilayani saat jam operasional di atas berjalan.
+              <h2 className="text-[28px] md:text-[36px] font-semibold tracking-[-0.01em] text-white">
+                Clean, Transparent, Witnessed Firsthand
+              </h2>
+              <p className="text-base md:text-[18px] font-normal leading-[1.7] text-white/85">
+                We serve every hot bowl from our open kitchen. The process is clean, transparent, and can be watched directly on-site.
               </p>
-            </div>
 
+              <div className="space-y-4.5 pt-2 border-t border-stone-700/50">
+                <div className="flex gap-3.5 items-start text-sm">
+                  <MapPin className="h-5 w-5 text-accent shrink-0 mt-0.5" />
+                  <span>Jl. Sudirman (Samping X), Palembang</span>
+                </div>
+                <div className="flex gap-3.5 items-start text-sm">
+                  <Clock className="h-5 w-5 text-accent shrink-0 mt-0.5" />
+                  <div className="space-y-0.5">
+                    <p className="font-semibold text-white">Selasa — Minggu: 16:00 — 22:00 WIB</p>
+                    <p className="text-xs text-white/60">Tutup setiap hari Senin.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* CONVERSION (WHATSAPP) */}
-      <section id="pesan" className="py-16 sm:py-20 bg-slate-900 text-white text-center">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-          <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">Pesan Self-Pickup via WhatsApp</h2>
-          <p className="text-sm sm:text-base text-slate-400 max-w-lg mx-auto leading-relaxed">
-            Klik tombol di bawah untuk memesan ramen. Ambil sendiri ke kedai kami agar kualitas rasa mie dan kehangatan kaldu tetap terjaga sempurna.
+      {/* OPERATIONAL INFO STATUS */}
+      <section id="lokasi" className="py-[50px] md:py-[70px] lg:py-[100px] bg-white reveal-on-scroll">
+        <div className="max-w-[1200px] mx-auto px-6 md:px-10 lg:px-20">
+          <div className="max-w-[600px] mx-auto text-center space-y-6">
+            <h2 className="text-[28px] md:text-[36px] font-semibold tracking-[-0.01em] text-secondary">
+              Status Kedai Hari Ini
+            </h2>
+            <p className="text-sm text-text-muted leading-relaxed">
+              Silakan periksa apakah stand kami sedang melayani pesanan saat ini.
+            </p>
+
+            <div
+              className={`inline-flex items-center gap-2.5 px-6 py-3 rounded-full text-base font-bold border ${
+                currentStatus.open
+                  ? "bg-emerald-50 text-success-trust border-success-trust/20"
+                  : "bg-red-50/50 text-error-warning-muted border-error-warning-muted/20"
+              }`}
+            >
+              <span
+                className={`h-3 w-3 rounded-full ${
+                  currentStatus.open ? "bg-success-trust animate-pulse-dot" : "bg-error-warning-muted"
+                }`}
+              />
+              {currentStatus.text}
+            </div>
+
+            <p className="text-xs text-text-muted">
+              Pemesanan WhatsApp hanya dilayani saat jam operasional di atas berjalan.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* ORDERING / CTA SECTION */}
+      <section
+        id="pesan"
+        className="py-[100px] bg-bg-warm border-t border-stone-200/80 text-center reveal-on-scroll"
+      >
+        <div className="max-w-[700px] mx-auto px-6 md:px-10 lg:px-20 space-y-6">
+          <h2 className="text-[28px] md:text-[36px] font-semibold tracking-[-0.01em] text-secondary">
+            Ready to Taste Real Halal Ramen?
+          </h2>
+          <p className="text-base md:text-lg text-text-primary leading-relaxed">
+            WhatsApp orders are only served during operating hours. Pick up at our shop to ensure perfect noodle texture and broth warmth.
           </p>
 
-          <div className="pt-2">
+          <div className="pt-4 reveal-stagger">
             <a
               href={WA_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center bg-red-600 hover:bg-red-700 text-white font-extrabold text-base px-8 py-6 rounded-xl shadow-xl shadow-red-900/10 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
+              className="inline-flex items-center justify-center gap-2.5 bg-primary hover:bg-[#A84A2D] text-white font-semibold text-lg px-12 py-4.5 rounded-xl shadow-primary-cta hover:shadow-primary-cta-hover hover:scale-[1.05] transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-accent focus-visible:ring-offset-2"
             >
-              <MessageCircle className="h-5.5 w-5.5 mr-2" /> Hubungi WhatsApp Kami
+              <svg
+                className="h-6 w-6 fill-current text-white"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M17.472 14.382c-.022-.08-.085-.184-.245-.26-.159-.077-.945-.467-1.092-.518-.147-.052-.254-.078-.36.078-.106.156-.41.518-.5.618-.09.1-.18.112-.34.034a3.785 3.785 0 0 1-1.258-.777 4.148 4.148 0 0 1-.87-1.084c-.1-.173-.01-.266.075-.35.077-.076.16-.184.24-.277.078-.09.105-.15.158-.25.05-.1.025-.19-.012-.267-.038-.077-.36-.865-.492-1.183-.128-.31-.26-.268-.36-.273-.098-.005-.212-.005-.326-.005a.63.63 0 0 0-.457.213c-.156.17-.597.583-.597 1.42 0 .838.61 1.65.696 1.77.086.12 1.2 1.83 2.9 2.562.404.175.72.28 1.0.37.406.128.775.11 1.066.067.324-.047 1.002-.41 1.144-.807.142-.397.142-.736.1-.807zM12 2C6.477 2 2 6.477 2 12a9.96 9.96 0 0 0 1.956 5.922L2 22l4.238-1.895A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2z" />
+              </svg>
+              Chat Us on WhatsApp
             </a>
           </div>
-          
-          <p className="text-[11px] text-slate-500 leading-normal">
-            Pemesanan aman &amp; halal tanpa melalui portal transaksi pihak ketiga.
-            <br />
-            Pembayaran tunai/non-tunai dilakukan saat Anda mengambil ramen di stand.
+
+          <p className="text-xs md:text-sm text-text-muted leading-relaxed max-w-md mx-auto">
+            Safe &amp; halal ordering. No third-party transaction portals. Cash/cashless payment upon pickup.
           </p>
         </div>
       </section>
 
       {/* FOOTER */}
-      <footer className="bg-slate-950 text-slate-400 py-10 border-t border-slate-900 text-xs">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="space-y-1 text-center md:text-left">
-            <p className="font-extrabold text-white text-sm">🍜 RamenPaitan.Plg</p>
-            <p className="leading-relaxed">Kedai Ramen Tori Paitan 100% Halal Tanpa Syubhat. Palembang.</p>
-          </div>
-          <p className="text-center md:text-right text-[10px] text-slate-600 leading-normal max-w-xs">
+      <footer className="bg-secondary text-white/70 py-12 border-t border-stone-800 text-sm">
+        <div className="max-w-[1200px] mx-auto px-6 md:px-10 lg:px-20 text-center space-y-4">
+          <p className="font-serif font-bold text-white text-2xl">Nutri Saji</p>
+          <p className="text-white/60">100% Halal Tori Paitan Ramen, Palembang.</p>
+          <p className="text-xs text-white/45 max-w-md mx-auto leading-relaxed">
             Seluruh data bahan, nutrisi, dan harga yang tertera bersifat transparan sebagai bentuk komitmen syariah kami terhadap kejelasan akad jual beli.
+          </p>
+          <p className="text-[11px] text-white/30 pt-4 border-t border-stone-800">
+            &copy; 2026 Nutri Saji. All rights reserved.
           </p>
         </div>
       </footer>
 
+      {/* MOBILE STICKY CTA (CRITICAL) */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-stone-200 shadow-sticky-cta z-30 flex items-center">
+        <a
+          href={WA_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full h-full flex items-center justify-between px-6 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-accent"
+        >
+          <div className="flex items-center gap-3">
+            <svg
+              className="h-7 w-7 fill-current text-[#25D366]"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path d="M17.472 14.382c-.022-.08-.085-.184-.245-.26-.159-.077-.945-.467-1.092-.518-.147-.052-.254-.078-.36.078-.106.156-.41.518-.5.618-.09.1-.18.112-.34.034a3.785 3.785 0 0 1-1.258-.777 4.148 4.148 0 0 1-.87-1.084c-.1-.173-.01-.266.075-.35.077-.076.16-.184.24-.277.078-.09.105-.15.158-.25.05-.1.025-.19-.012-.267-.038-.077-.36-.865-.492-1.183-.128-.31-.26-.268-.36-.273-.098-.005-.212-.005-.326-.005a.63.63 0 0 0-.457.213c-.156.17-.597.583-.597 1.42 0 .838.61 1.65.696 1.77.086.12 1.2 1.83 2.9 2.562.404.175.72.28 1.0.37.406.128.775.11 1.066.067.324-.047 1.002-.41 1.144-.807.142-.397.142-.736.1-.807zM12 2C6.477 2 2 6.477 2 12a9.96 9.96 0 0 0 1.956 5.922L2 22l4.238-1.895A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2z" />
+            </svg>
+            <span className="text-base font-semibold text-secondary">
+              Order Ramen Now
+            </span>
+          </div>
+          <ArrowRight className="h-5 w-5 text-secondary" />
+        </a>
+      </div>
+
       {/* CONSENT VAULT DIALOG */}
       <Dialog open={consentOpen} onOpenChange={setConsentOpen}>
-        <DialogContent className="sm:max-w-md bg-white border-slate-200">
+        <DialogContent className="sm:max-w-md bg-white border-stone-200 rounded-2xl">
           <DialogHeader>
-            <DialogTitle className="text-base font-bold text-slate-950">
+            <DialogTitle className="text-base font-bold text-secondary">
               Persetujuan Pelacakan Digital
             </DialogTitle>
-            <DialogDescription className="text-xs text-slate-500 leading-relaxed">
+            <DialogDescription className="text-xs text-text-muted leading-relaxed">
               Kami menghormati privasi Anda. Izinkan kami merekam statistik anonim (tanpa identitas pribadi) hanya untuk memantau tombol WhatsApp yang diklik pengunjung?
             </DialogDescription>
           </DialogHeader>
@@ -503,14 +769,14 @@ export default function LandingPage() {
             <Button
               variant="outline"
               size="sm"
-              className="w-full sm:w-auto text-xs font-semibold text-slate-600"
+              className="w-full sm:w-auto text-xs font-semibold text-text-muted"
               onClick={() => handleConsent(false)}
             >
               Tolak Semua
             </Button>
             <Button
               size="sm"
-              className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white text-xs font-semibold sm:ml-2"
+              className="w-full sm:w-auto bg-primary hover:bg-[#A84A2D] text-white text-xs font-semibold sm:ml-2"
               onClick={() => handleConsent(true)}
             >
               Saya Izinkan
