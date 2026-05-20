@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import {
   MapPin,
   Clock,
@@ -52,6 +53,7 @@ interface MenuItem {
   badgeClass: string;
   ingredients: string;
   description: string;
+  image: string;
 }
 
 const menuItems: MenuItem[] = [
@@ -66,6 +68,7 @@ const menuItems: MenuItem[] = [
       "Mie lurus kecil, kuah kaldu ayam pekat 8 jam, ayam chashu halal, jamur kikurage, daun bawang, nori.",
     description:
       "Ramen signature kami. Kaldu kolagen ayam yang direbus 8 jam menghasilkan kuah creamy kental penuh umami — gurih alami.",
+    image: "/images/ramen/ramen-bowl-angle.jpg",
   },
   {
     id: "spicy-tantanmen",
@@ -78,6 +81,7 @@ const menuItems: MenuItem[] = [
       "Mie keriting tebal, kuah kaldu ayam pedas, daging ayam cincang berbumbu, pak choy, wijen sangrai, cabai kering.",
     description:
       "Varian pedas dengan wijen gurih dan bumbu tantanmen otentik. Level pedas tidak dapat dikustomisasi.",
+    image: "/images/ramen/ramen-kitchen-result.jpg",
   },
   {
     id: "shoyu-ramen",
@@ -90,6 +94,7 @@ const menuItems: MenuItem[] = [
       "Mie lurus kecil, kuah kaldu ayam shoyu halal, telur ajitama setengah matang, nori, jagung manis, daun bawang.",
     description:
       "Ramen kuah shoyu bening yang ringan. Cita rasa umami halus yang sangat disukai anak-anak dan keluarga.",
+    image: "/images/ramen/ramen-broth-closeup.jpg",
   },
 ];
 
@@ -107,32 +112,32 @@ interface ComparisonCardData {
 
 const comparisonCards: ComparisonCardData[] = [
   {
-    title: "Broth (Kaldu)",
-    traditionalName: "Tonkotsu (Pork Bone) & MSG",
-    traditionalDesc: "Pork bone broth or synthetic thickeners & excessive MSG.",
+    title: "Kaldu (Broth)",
+    traditionalName: "Tonkotsu (Tulang Babi) & MSG",
+    traditionalDesc: "Kaldu tulang babi atau pengental sintetis & MSG berlebih.",
     halalName: "Tori Paitan",
-    halalDesc: "Fresh syar'i certified chicken bones simmered for 8 hours until natural collagen thickens.",
+    halalDesc: "Tulang ayam segar bersertifikat syar'i yang direbus selama 8 jam hingga kolagen alami mengental.",
   },
   {
-    title: "Umami & Sweetness",
-    traditionalName: "Mirin & Sake (Alcohol)",
-    traditionalDesc: "Fermented alcohol used for sweet-gurih aroma in Japanese cooking.",
-    halalName: "Apple & Shiitake Reduction",
-    halalDesc: "Reduction of ripe Fuji apple extract, dried shiitake mushroom broth, and pure forest honey.",
+    title: "Rasa Gurih & Manis",
+    traditionalName: "Mirin & Sake (Alkohol)",
+    traditionalDesc: "Alkohol fermentasi yang digunakan untuk aroma manis-gurih dalam masakan Jepang.",
+    halalName: "Reduksi Apel & Jamur Shiitake",
+    halalDesc: "Reduksi ekstrak apel Fuji matang, kaldu jamur shiitake kering, dan madu hutan murni.",
   },
   {
-    title: "Rich Oil (Minyak Gurih)",
-    traditionalName: "Lard (Pork Fat)",
-    traditionalDesc: "Pork fat used to create standard greasy rich ramen mouthfeel.",
-    halalName: "Chicken Schmaltz",
-    halalDesc: "Slowly rendered chicken skin fat at low temperature for clean richness.",
+    title: "Minyak Gurih (Rich Oil)",
+    traditionalName: "Lard (Lemak Babi)",
+    traditionalDesc: "Lemak babi yang digunakan untuk menciptakan rasa gurih berminyak standar pada ramen.",
+    halalName: "Minyak Lemak Ayam (Schmaltz)",
+    halalDesc: "Lemak kulit ayam yang dicairkan perlahan pada suhu rendah untuk rasa gurih yang bersih.",
   },
   {
     title: "Shoyu (Kecap Asin)",
-    traditionalName: "Conventional Shoyu",
-    traditionalDesc: "Fermented soy sauce containing active alcohol/ethanol residues.",
-    halalName: "MUI Halal Shoyu",
-    halalDesc: "Shoyu 100% Halal MUI certified with 0.0% alcohol from the start.",
+    traditionalName: "Shoyu Konvensional",
+    traditionalDesc: "Kecap asin fermentasi Jepang yang mengandung residu alkohol/etanol aktif.",
+    halalName: "Shoyu Halal MUI",
+    halalDesc: "Shoyu bersertifikat 100% Halal MUI dengan 0.0% kandungan alkohol sejak awal.",
   },
 ];
 
@@ -149,23 +154,23 @@ interface IngredientItem {
 const ingredientItems: IngredientItem[] = [
   {
     icon: "🍗",
-    title: "Syar'i Chicken",
-    description: "Fresh certified chicken bones, 8-hour simmer.",
+    title: "Ayam Syar'i",
+    description: "Tulang ayam segar bersertifikat, direbus selama 8 jam.",
   },
   {
     icon: "🍎",
-    title: "Fuji Apple Extract",
-    description: "Natural sweetness, zero alcohol.",
+    title: "Ekstrak Apel Fuji",
+    description: "Rasa manis alami, tanpa alkohol fermentasi.",
   },
   {
     icon: "🍄",
-    title: "Shiitake Broth",
-    description: "Dried premium mushrooms for deep umami.",
+    title: "Kaldu Shiitake",
+    description: "Jamur shiitake kering premium untuk rasa gurih mendalam.",
   },
   {
     icon: "🍯",
-    title: "Forest Honey",
-    description: "Pure, unprocessed natural sweetener.",
+    title: "Madu Hutan",
+    description: "Pemanis alami murni tanpa proses tambahan.",
   },
 ];
 
@@ -180,6 +185,10 @@ export default function LandingPage() {
   const [consentOpen, setConsentOpen] = React.useState(false);
   const [trackingConsent, setTrackingConsent] = React.useState<boolean | null>(null);
   const [mobileNavOpen, setMobileNavOpen] = React.useState(false);
+
+  // Image load states & fallbacks
+  const [heroImageError, setHeroImageError] = React.useState(false);
+  const [failedImages, setFailedImages] = React.useState<Record<string, boolean>>({});
 
   // Status Buka/Tutup
   const [currentStatus, setCurrentStatus] = React.useState<{ open: boolean; text: string }>({
@@ -340,22 +349,28 @@ export default function LandingPage() {
 
       {/* HERO SECTION — FULL REDESIGN */}
       <section className="relative w-full h-[100vh] min-h-[600px] overflow-hidden flex items-end">
-        {/* Background Visual (Image Placeholder with requested styles) */}
+        {/* Background Visual (Image with requested styles) */}
         <div className="absolute inset-0 z-0 overflow-hidden bg-[#2C3E50]">
-          <div
-            className="absolute inset-0 bg-cover bg-center animate-hero-bg opacity-35"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle at 60% 50%, #C75B39 0%, #2C3E50 80%)",
-            }}
-          />
+          {!heroImageError ? (
+            <Image
+              src="/images/ramen/ramen-hero.jpg"
+              alt="Mangkuk ramen Tori Paitan Nutri Saji — kaldu ayam creamy dengan topping chashu dan nori"
+              fill
+              priority
+              className="object-cover object-center animate-hero-bg opacity-35"
+              onError={() => setHeroImageError(true)}
+            />
+          ) : (
+            <div
+              className="absolute inset-0 bg-cover bg-center animate-hero-bg opacity-35"
+              style={{
+                backgroundImage:
+                  "radial-gradient(circle at 60% 50%, #C75B39 0%, #2C3E50 80%)",
+              }}
+            />
+          )}
           {/* Subtle Vignette at corners */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_40%,rgba(0,0,0,0.6)_100%)] pointer-events-none" />
-
-          {/* Actual Photo Placeholder Badge */}
-          <div className="absolute top-8 right-8 z-10 bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-semibold px-4 py-2 rounded-lg">
-            📸 Foto Asli Hidangan Segera Hadir
-          </div>
         </div>
 
         {/* Full-bleed Gradient Overlay */}
@@ -366,7 +381,7 @@ export default function LandingPage() {
           <div className="max-w-[600px] space-y-6 text-left animate-hero-text">
             {/* Trust Pill Badge */}
             <div className="inline-flex items-center gap-2 bg-white/15 border border-white/30 backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-bold text-white uppercase tracking-wider">
-              <ShieldCheck className="h-4 w-4 text-accent" /> 100% Halal Certified
+              <ShieldCheck className="h-4 w-4 text-accent" /> 100% Bersertifikat Halal
             </div>
 
             {/* H1 Headline */}
@@ -377,7 +392,7 @@ export default function LandingPage() {
 
             {/* Subheadline */}
             <p className="text-base md:text-lg font-normal leading-[1.7] text-white/90">
-              We deconstruct ramen anatomy. No pork, no lard, no mirin, no sake. Maximum umami from 100% thayyib ingredients.
+              Kami membedah anatomi ramen secara transparan. Tanpa babi, tanpa lemak babi (lard), tanpa mirin, tanpa sake. Umami maksimal dari 100% bahan thayyib.
             </p>
 
             {/* Actions & Micro-text */}
@@ -396,10 +411,10 @@ export default function LandingPage() {
                 >
                   <path d="M17.472 14.382c-.022-.08-.085-.184-.245-.26-.159-.077-.945-.467-1.092-.518-.147-.052-.254-.078-.36.078-.106.156-.41.518-.5.618-.09.1-.18.112-.34.034a3.785 3.785 0 0 1-1.258-.777 4.148 4.148 0 0 1-.87-1.084c-.1-.173-.01-.266.075-.35.077-.076.16-.184.24-.277.078-.09.105-.15.158-.25.05-.1.025-.19-.012-.267-.038-.077-.36-.865-.492-1.183-.128-.31-.26-.268-.36-.273-.098-.005-.212-.005-.326-.005a.63.63 0 0 0-.457.213c-.156.17-.597.583-.597 1.42 0 .838.61 1.65.696 1.77.086.12 1.2 1.83 2.9 2.562.404.175.72.28 1.0.37.406.128.775.11 1.066.067.324-.047 1.002-.41 1.144-.807.142-.397.142-.736.1-.807zM12 2C6.477 2 2 6.477 2 12a9.96 9.96 0 0 0 1.956 5.922L2 22l4.238-1.895A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2z" />
                 </svg>
-                Order via WhatsApp
+                Pesan via WhatsApp
               </a>
               <span className="text-xs sm:text-sm text-white/70 block pl-1">
-                Pickup only — Guaranteed hot &amp; fresh from our open kitchen.
+                Hanya ambil sendiri (self-pickup) — Dijamin hangat &amp; segar dari dapur terbuka kami.
               </span>
             </div>
           </div>
@@ -414,10 +429,10 @@ export default function LandingPage() {
         <div className="max-w-[1200px] mx-auto px-6 md:px-10 lg:px-20">
           <div className="text-center space-y-4 mb-12">
             <h2 className="text-[28px] md:text-[36px] font-semibold tracking-[-0.01em] text-secondary">
-              Radical Separation of Halal &amp; Syubhat
+              Pemisahan Radikal Halal &amp; Syubhat
             </h2>
             <p className="text-base md:text-lg text-text-muted max-w-[700px] mx-auto leading-relaxed">
-              We replace haram and syubhat ingredients with natural, certified halal alternatives for your peace of mind.
+              Kami mengganti semua bahan haram dan syubhat dengan alternatif alami bersertifikat halal untuk ketenangan pikiran Anda.
             </p>
           </div>
 
@@ -441,7 +456,7 @@ export default function LandingPage() {
                   {/* Left Column (Traditional) */}
                   <div className="space-y-3.5 pr-2">
                     <div className="text-[11px] font-bold uppercase tracking-wider text-error-warning-muted">
-                      Traditional
+                      Ramen Biasa
                     </div>
                     <div className="flex items-center justify-center h-8 w-8 rounded-full bg-red-50 text-error-warning-muted">
                       <XCircle className="h-4.5 w-4.5" />
@@ -481,10 +496,10 @@ export default function LandingPage() {
         <div className="max-w-[1200px] mx-auto px-6 md:px-10 lg:px-20">
           <div className="text-center space-y-4 mb-12">
             <h2 className="text-[28px] md:text-[36px] font-semibold tracking-[-0.01em] text-secondary">
-              What Goes Into Your Bowl
+              Bahan Baku di Mangkok Anda
             </h2>
             <p className="text-base md:text-lg text-text-muted max-w-[600px] mx-auto leading-relaxed">
-              Every ingredient is natural, traceable, and certified.
+              Setiap bahan baku alami, kehalalannya dapat dilacak, dan telah bersertifikat.
             </p>
           </div>
 
@@ -526,8 +541,20 @@ export default function LandingPage() {
             {menuItems.map((item) => (
               <Card
                 key={item.id}
-                className="flex flex-col border-stone-200 bg-white rounded-2xl shadow-secondary-card hover:shadow-secondary-card-hover hover:-translate-y-1 transition-all duration-300 reveal-stagger"
+                className="flex flex-col border-stone-200 bg-white rounded-2xl shadow-secondary-card hover:shadow-secondary-card-hover hover:-translate-y-1 transition-all duration-300 overflow-hidden reveal-stagger"
               >
+                {!failedImages[item.image] && (
+                  <div className="relative w-full aspect-[4/3] bg-stone-100 overflow-hidden">
+                    <Image
+                      src={item.image}
+                      alt={item.name}
+                      fill
+                      className="object-cover transition-transform duration-500 hover:scale-105"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      onError={() => setFailedImages((prev) => ({ ...prev, [item.image]: true }))}
+                    />
+                  </div>
+                )}
                 <CardHeader className="pb-4">
                   <div className="flex items-start justify-between gap-3">
                     <CardTitle className="text-xl font-bold text-secondary leading-tight">
@@ -611,7 +638,7 @@ export default function LandingPage() {
 
                 {/* Floating Badge */}
                 <div className="absolute bottom-4 right-4 z-10 bg-white text-secondary font-bold text-xs px-4 py-2.5 rounded-lg shadow-kitchen-badge">
-                  🔥 Open Kitchen — Watch Us Cook
+                  🔥 Dapur Terbuka — Saksikan Kami Memasak
                 </div>
               </div>
             </div>
@@ -619,13 +646,13 @@ export default function LandingPage() {
             {/* Right Side (45% width on desktop) */}
             <div className="md:col-span-5 space-y-6 text-left reveal-stagger">
               <div className="text-xs font-bold uppercase tracking-widest text-accent">
-                Transparency
+                Transparansi
               </div>
               <h2 className="text-[28px] md:text-[36px] font-semibold tracking-[-0.01em] text-white">
-                Clean, Transparent, Witnessed Firsthand
+                Bersih, Transparan, Disaksikan Langsung
               </h2>
               <p className="text-base md:text-[18px] font-normal leading-[1.7] text-white/85">
-                We serve every hot bowl from our open kitchen. The process is clean, transparent, and can be watched directly on-site.
+                Kami menyajikan setiap mangkok hangat langsung dari dapur terbuka kami. Proses pengerjaan bersih, higienis, transparan, dan dapat disaksikan langsung.
               </p>
 
               <div className="space-y-4.5 pt-2 border-t border-stone-700/50">
@@ -686,10 +713,10 @@ export default function LandingPage() {
       >
         <div className="max-w-[700px] mx-auto px-6 md:px-10 lg:px-20 space-y-6">
           <h2 className="text-[28px] md:text-[36px] font-semibold tracking-[-0.01em] text-secondary">
-            Ready to Taste Real Halal Ramen?
+            Siap Mencicipi Ramen Halal yang Sebenarnya?
           </h2>
           <p className="text-base md:text-lg text-text-primary leading-relaxed">
-            WhatsApp orders are only served during operating hours. Pick up at our shop to ensure perfect noodle texture and broth warmth.
+            Pemesanan melalui WhatsApp hanya dilayani selama jam operasional. Ambil di kedai kami untuk memastikan tekstur mie yang sempurna dan kaldu yang hangat.
           </p>
 
           <div className="pt-4 reveal-stagger">
@@ -706,12 +733,12 @@ export default function LandingPage() {
               >
                 <path d="M17.472 14.382c-.022-.08-.085-.184-.245-.26-.159-.077-.945-.467-1.092-.518-.147-.052-.254-.078-.36.078-.106.156-.41.518-.5.618-.09.1-.18.112-.34.034a3.785 3.785 0 0 1-1.258-.777 4.148 4.148 0 0 1-.87-1.084c-.1-.173-.01-.266.075-.35.077-.076.16-.184.24-.277.078-.09.105-.15.158-.25.05-.1.025-.19-.012-.267-.038-.077-.36-.865-.492-1.183-.128-.31-.26-.268-.36-.273-.098-.005-.212-.005-.326-.005a.63.63 0 0 0-.457.213c-.156.17-.597.583-.597 1.42 0 .838.61 1.65.696 1.77.086.12 1.2 1.83 2.9 2.562.404.175.72.28 1.0.37.406.128.775.11 1.066.067.324-.047 1.002-.41 1.144-.807.142-.397.142-.736.1-.807zM12 2C6.477 2 2 6.477 2 12a9.96 9.96 0 0 0 1.956 5.922L2 22l4.238-1.895A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2z" />
               </svg>
-              Chat Us on WhatsApp
+              Hubungi Kami di WhatsApp
             </a>
           </div>
 
           <p className="text-xs md:text-sm text-text-muted leading-relaxed max-w-md mx-auto">
-            Safe &amp; halal ordering. No third-party transaction portals. Cash/cashless payment upon pickup.
+            Pemesanan aman &amp; halal. Tanpa perantara pihak ketiga. Pembayaran tunai/non-tunai langsung saat pengambilan.
           </p>
         </div>
       </section>
@@ -725,7 +752,7 @@ export default function LandingPage() {
             Seluruh data bahan, nutrisi, dan harga yang tertera bersifat transparan sebagai bentuk komitmen syariah kami terhadap kejelasan akad jual beli.
           </p>
           <p className="text-[11px] text-white/30 pt-4 border-t border-stone-800">
-            &copy; 2026 Nutri Saji. All rights reserved.
+            &copy; 2026 Nutri Saji. Hak cipta dilindungi undang-undang.
           </p>
         </div>
       </footer>
@@ -747,7 +774,7 @@ export default function LandingPage() {
               <path d="M17.472 14.382c-.022-.08-.085-.184-.245-.26-.159-.077-.945-.467-1.092-.518-.147-.052-.254-.078-.36.078-.106.156-.41.518-.5.618-.09.1-.18.112-.34.034a3.785 3.785 0 0 1-1.258-.777 4.148 4.148 0 0 1-.87-1.084c-.1-.173-.01-.266.075-.35.077-.076.16-.184.24-.277.078-.09.105-.15.158-.25.05-.1.025-.19-.012-.267-.038-.077-.36-.865-.492-1.183-.128-.31-.26-.268-.36-.273-.098-.005-.212-.005-.326-.005a.63.63 0 0 0-.457.213c-.156.17-.597.583-.597 1.42 0 .838.61 1.65.696 1.77.086.12 1.2 1.83 2.9 2.562.404.175.72.28 1.0.37.406.128.775.11 1.066.067.324-.047 1.002-.41 1.144-.807.142-.397.142-.736.1-.807zM12 2C6.477 2 2 6.477 2 12a9.96 9.96 0 0 0 1.956 5.922L2 22l4.238-1.895A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2z" />
             </svg>
             <span className="text-base font-semibold text-secondary">
-              Order Ramen Now
+              Pesan Ramen Sekarang
             </span>
           </div>
           <ArrowRight className="h-5 w-5 text-secondary" />
