@@ -269,7 +269,7 @@ export default function LandingPage() {
             href="#"
             className="font-serif font-bold text-2xl tracking-tight text-secondary focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-accent focus-visible:ring-offset-2 rounded-md"
           >
-            Nutri Saji
+            MenDa
           </a>
 
           <nav className="hidden md:flex items-center gap-8 text-sm font-semibold text-text-muted">
@@ -746,13 +746,13 @@ export default function LandingPage() {
       {/* FOOTER */}
       <footer className="bg-secondary text-white/70 py-12 border-t border-stone-800 text-sm">
         <div className="max-w-[1200px] mx-auto px-6 md:px-10 lg:px-20 text-center space-y-4">
-          <p className="font-serif font-bold text-white text-2xl">Nutri Saji</p>
+          <p className="font-serif font-bold text-white text-2xl">MenDa</p>
           <p className="text-white/60">100% Halal Tori Paitan Ramen, Palembang.</p>
           <p className="text-xs text-white/45 max-w-md mx-auto leading-relaxed">
             Seluruh data bahan, nutrisi, dan harga yang tertera bersifat transparan sebagai bentuk komitmen syariah kami terhadap kejelasan akad jual beli.
           </p>
           <p className="text-[11px] text-white/30 pt-4 border-t border-stone-800">
-            &copy; 2026 Nutri Saji. Hak cipta dilindungi undang-undang.
+            &copy; 2026 MenDa. Hak cipta dilindungi undang-undang.
           </p>
         </div>
       </footer>

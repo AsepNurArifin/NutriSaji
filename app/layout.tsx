@@ -15,7 +15,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Nutri Saji — Premium Tori Paitan Ramen 100% Halal Palembang",
+  title: "MenDa — Premium Tori Paitan Ramen 100% Halal Palembang",
   description:
     "Ramen Tori Paitan autentik Jepang, 100% Halal. Kaldu ayam kolagen direbus 8 jam. Tanpa Mirin, Tanpa Sake. Kunjungi stand kami di Palembang atau pesan via WhatsApp untuk Self-Pickup.",
 };

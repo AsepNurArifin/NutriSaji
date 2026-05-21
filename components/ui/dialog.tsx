@@ -37,7 +37,7 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
         onClick={() => onOpenChange(false)}
       />
       {/* Content Container */}
-      <div className="z-10 w-full max-w-lg scale-100 transform overflow-hidden rounded-xl border border-zinc-200 bg-white p-6 shadow-xl transition-all duration-300 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50 sm:rounded-2xl animate-in zoom-in-95 duration-200 relative">
+      <div className="z-10 w-full max-w-lg scale-100 transform overflow-hidden rounded-xl border border-zinc-200 bg-white p-6 shadow-xl transition-all duration-300 sm:rounded-2xl animate-in zoom-in-95 duration-200 relative">
         {children}
       </div>
     </div>
@@ -74,7 +74,7 @@ export function DialogDescription({
 }: React.HTMLAttributes<HTMLParagraphElement>) {
   return (
     <p
-      className={cn("text-sm text-zinc-500 dark:text-zinc-400", className)}
+      className={cn("text-sm text-zinc-500", className)}
       {...props}
     />
   )
@@ -101,7 +101,7 @@ export function DialogClose({
     <button
       type="button"
       className={cn(
-        "absolute right-4 top-4 rounded-md opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:pointer-events-none text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100",
+        "absolute right-4 top-4 rounded-md opacity-70 transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:pointer-events-none text-zinc-500 hover:text-zinc-900",
         className
       )}
       onClick={onClick}

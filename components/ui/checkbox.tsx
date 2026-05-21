@@ -37,10 +37,10 @@ export function Checkbox({
       onClick={() => !disabled && onCheckedChange(!checked)}
       onKeyDown={handleKeyDown}
       className={cn(
-        "peer h-4 w-4 shrink-0 rounded border border-zinc-300 shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700",
+        "peer h-4 w-4 shrink-0 rounded border border-zinc-300 shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
         checked
-          ? "bg-emerald-600 border-emerald-600 text-white dark:bg-emerald-500 dark:border-emerald-500"
-          : "bg-white dark:bg-zinc-950",
+          ? "bg-emerald-600 border-emerald-600 text-white"
+          : "bg-white",
         "flex items-center justify-center cursor-pointer transition-colors",
         className
       )}

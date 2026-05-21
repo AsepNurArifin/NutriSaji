@@ -46,7 +46,7 @@ export function AccordionItem({
 }) {
   return (
     <AccordionItemContext.Provider value={{ value }}>
-      <div className={cn("border-b border-zinc-200 dark:border-zinc-800", className)}>
+      <div className={cn("border-b border-zinc-200", className)}>
         {children}
       </div>
     </AccordionItemContext.Provider>
@@ -68,7 +68,7 @@ export function AccordionTrigger({
     <button
       type="button"
       className={cn(
-        "flex w-full items-center justify-between py-4 font-medium transition-all hover:underline text-left text-zinc-900 dark:text-zinc-100",
+        "flex w-full items-center justify-between py-4 font-medium transition-all hover:underline text-left text-zinc-900",
         className
       )}
       onClick={() => onValueChange?.(item.value)}
@@ -77,7 +77,7 @@ export function AccordionTrigger({
       {children}
       <ChevronDown
         className={cn(
-          "h-4 w-4 shrink-0 text-zinc-500 transition-transform duration-250 dark:text-zinc-400",
+          "h-4 w-4 shrink-0 text-zinc-500 transition-transform duration-250",
           isOpen && "rotate-180"
         )}
       />
